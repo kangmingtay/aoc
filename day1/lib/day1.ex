@@ -5,6 +5,7 @@ defmodule Day1 do
     path
     |> File.read!
     |> String.split("\n", trim: true)
+    |> Enum.map(&String.to_integer/1)
   end
 
   def count_increments([]), do: 0
@@ -19,7 +20,68 @@ defmodule Day1 do
   def sol(input) do
     input # TODO: use a module attribute
     |> parse_input
-    |> Enum.map(fn x -> String.to_integer(x) end) # TODO: make this cleaner!!
     |> count_increments
   end
+
+  def count_sum_incr([]), do: 0
+  def count_sum_incr([_a, _b, _c]), do: 0
+  def count_sum_incr([a, b, c, d | tail]) do
+    sum1 = a + b + c
+    sum2 = b + c + d
+    cond do 
+      sum1 >= sum2 -> 0 + count_sum_incr([b, c, d | tail])
+      sum1 < sum2 -> 1 + count_sum_incr([b, c, d | tail])
+    end
+  end
+
+  def sol2(input) do
+    input
+    |> parse_input
+    |> count_sum_incr
+  end
+
+  # Implementation using pipelines only  
+  def part1_pipeline(path) do
+    path
+    |> File.read!
+    |> String.split("\n", trim: true)
+    |> Enum.map(&String.to_integer/1)
+    |> IO.inspect()
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.count(fn [left, right] -> right > left end)
+  end
+
+  def part2_pipeline(path) do
+    path
+    |> File.read!
+    |> String.split("\n", trim: true)
+    |> Enum.map(&String.to_integer/1)
+    |> Enum.chunk_every(3, 1, :discard)
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.count(fn [left, right] -> Enum.sum(right) > Enum.sum(left) end)
+  end
+
+  # Using streams
+  def part1_pipeline_streams(path) do
+    path
+    |> File.read!
+    |> String.splitter("\n", trim: true)
+    |> Stream.map(&String.to_integer/1)
+    |> IO.inspect()
+    |> Stream.chunk_every(2, 1, :discard)
+    |> Enum.count(fn [left, right] -> right > left end)
+  end
+
+  def part2_pipeline_streams(path) do
+    path
+    |> File.read!
+    |> String.splitter("\n", trim: true)
+    |> Stream.map(&String.to_integer/1)
+    |> IO.inspect()
+    |> Stream.chunk_every(3, 1, :discard)
+    |> Stream.chunk_every(2, 1, :discard)
+    |> Enum.count(fn [left, right] -> Enum.sum(right) > Enum.sum(left) end)
+  end
+
 end
+
