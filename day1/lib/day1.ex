@@ -8,7 +8,10 @@ defmodule Day1 do
     |> Enum.map(&String.to_integer/1)
   end
 
-  def count_increments([]), do: 0
+  def recur([left, right | tail], acc) when right > left, do: recur([right | tail], acc + 1)
+  def recur([_left, right | tail], acc), do: recur([right | tail], acc)
+  def recur([_], acc), do: acc
+
   def count_increments([_x]), do: 0
   def count_increments([f , s | t]) do
     cond do
@@ -23,7 +26,6 @@ defmodule Day1 do
     |> count_increments
   end
 
-  def count_sum_incr([]), do: 0
   def count_sum_incr([_a, _b, _c]), do: 0
   def count_sum_incr([a, b, c, d | tail]) do
     sum1 = a + b + c
