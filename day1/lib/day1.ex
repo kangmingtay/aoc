@@ -58,7 +58,8 @@ defmodule Day1 do
     |> Enum.map(&String.to_integer/1)
     |> Enum.chunk_every(3, 1, :discard)
     |> Enum.chunk_every(2, 1, :discard)
-    |> Enum.count(fn [left, right] -> Enum.sum(right) > Enum.sum(left) end)
+    # |> Enum.count(fn [left, right] -> Enum.sum(right) > Enum.sum(left) end)
+    |> Enum.count(fn [[left, m1, m2], [m1, m2, right]] -> right > left end)  # Optimization: Use pattern matching instead of sum
   end
 
   # Using streams
