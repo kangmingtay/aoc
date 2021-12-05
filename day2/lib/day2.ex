@@ -16,6 +16,7 @@ defmodule Day2 do
     path
     |> parse_input
     |> Enum.reduce({0, 0}, fn move, acc -> make_move(move, acc) end)
+    |> then(fn {h, d} -> h*d end)
   end
 
 
@@ -27,7 +28,30 @@ defmodule Day2 do
   def sol2(path) do
     path
     |> parse_input
-    |> Enum.reduce({0, 0, 0}, fn move, acc -> make_cmd(move, acc) end)
+    |> Enum.reduce({_horizontal = 0, _depth = 0, _aim = 0}, fn move, acc -> make_cmd(move, acc) end)
+    |> then(fn {h, d, _} -> h*d end)
+  end
+
+  # Using Nx Part 1
+  def solnx(path) do
+    path
+    |> File.read!
+    |> String.split("\n", trim: true)
+    |> Enum.map(fn move -> 
+      [direction, distance] = String.split(move, " ", trim: true)
+      distance_int = String.to_integer(distance)
+      case direction do
+        "forward" -> {distance_int, 0}
+        "down" -> {0, distance_int}
+        "up" -> {0, -distance_int}
+      end
+    end)
+    |> Enum.unzip
+    |> then(fn {hs, ds} ->
+      Nx.multiply(Nx.sum(Nx.tensor(hs)), Nx.sum(Nx.tensor(ds)))
+    end)
+    |> IO.inspect
+
   end
 
 end
