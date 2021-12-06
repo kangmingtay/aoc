@@ -11,18 +11,24 @@ defmodule Day3 do
     |> parse_input()
     |> then(fn rows -> 
       acc = rows |> get_one |> init_acc
-      Enum.reduce(rows, acc, fn row, acc -> 
-        row 
-        |> Enum.map(fn x -> 
-          case x do 
-            "0" -> -1
-            "1" -> 1
-          end 
-        end)
+      Enum.reduce(rows, acc, fn row, acc ->
+        row
         |> Enum.zip(acc)
-        |> Enum.map(fn {l, r} -> l + r end)
+        |> Enum.map(fn { val, { zeros, ones } } -> 
+          case val do
+            "0" -> { zeros + 1, ones }
+            "1" -> { zeros, ones + 1 }
+          end
+        end)
       end)
     end)
+    |> Enum.map(fn { zeros, ones } ->
+      cond do
+        zeros > ones -> 0
+        zeros < ones -> 1
+        :otherwise -> 1
+      end
+    end) 
     |> Enum.map(&most_common/1)
     |> then(fn row ->
       { gamma_row, epsilon_row } = row |> Enum.unzip()
@@ -41,8 +47,8 @@ defmodule Day3 do
 
   def get_one(rows), do: List.first(rows)
 
-  def init_acc([_]), do: [0]
-  def init_acc([_head | tail]), do: [0 | init_acc(tail)] 
+  def init_acc([_]), do: [ { 0, 0 } ]
+  def init_acc([_head | tail]), do: [ { 0, 0 } | init_acc(tail)] 
          
   def most_common(num) do
     cond do
