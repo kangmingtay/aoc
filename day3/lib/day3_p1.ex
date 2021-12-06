@@ -1,4 +1,4 @@
-defmodule Day3 do
+defmodule Day3.Part1 do
   def parse_input(path) do
     path
     |> File.read!
