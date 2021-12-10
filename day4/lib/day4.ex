@@ -73,5 +73,28 @@ defmodule Day4 do
         number * Board.unmarked_sum(board)
       end)
     end)
+  end
+
+  def sol2_improved(path) do
+    { inputs, boards } = parse_input(path)
+
+    inputs
+    |> Enum.reduce_while(boards, fn number, boards ->
+      boards = Enum.map(boards, &Board.mark(&1, number))
+
+      case boards_left = Enum.reject(boards, &Board.won?/1) do 
+        # when all boards have won, there should be no more boards left
+        [] ->
+          # assume that there will always be 1 board that wins last
+          [board] = boards
+          {:halt, {number, board}}
+
+        _ -> {:cont, boards_left}
+      end
+    end)
+    |> then(fn { number, board } ->
+      number * Board.unmarked_sum(board)
+    end)
   end 
+
 end
