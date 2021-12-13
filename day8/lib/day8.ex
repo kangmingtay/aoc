@@ -26,7 +26,9 @@ defmodule Day8 do
     |> String.split(["\n", " | "], trim: true)
     |> Enum.chunk_every(2)
     |> Enum.map(fn [inputs, outputs] -> 
-      { String.split(inputs), String.split(outputs) }
+      inputs = Enum.map(String.split(inputs), &String.to_charlist/1)
+      outputs = Enum.map(String.split(outputs), &String.to_charlist/1)
+      { inputs, outputs }
     end)
   end
 
@@ -35,7 +37,7 @@ defmodule Day8 do
    
     parsed
     |> Enum.map(fn { inputs, outputs } ->
-      map = Enum.map(inputs, &String.to_charlist/1) |> Enum.group_by(&length/1)
+      map = inputs |> Enum.group_by(&length/1)
 
       %{
         2 => [one],
@@ -67,13 +69,7 @@ defmodule Day8 do
         Enum.sort(nine) => 9,
       }
 
-      Enum.map(outputs, fn output ->
-        output
-        |> String.to_charlist()
-        |> Enum.sort()
-        |> then(fn digit -> mapping[digit] end)
-      end)
-      |> Integer.undigits()
+      outputs |> Enum.map(&(mapping[Enum.sort(&1)])) |> Integer.undigits()
     end)
     |> Enum.sum()
   end
